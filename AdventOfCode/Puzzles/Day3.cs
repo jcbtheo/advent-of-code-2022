@@ -45,9 +45,8 @@ namespace AdventOfCode.Puzzles
                 var elfGroupLines = lines.GetRange(elfGroupIndex, 3);
 
                 var firstIntersection = elfGroupLines[0].Intersect(elfGroupLines[1]);
-                var firstIntersectionString = new string(firstIntersection.ToArray());
+                var common = elfGroupLines[2].Intersect(firstIntersection);
 
-                var common = firstIntersectionString.Intersect(elfGroupLines[2]);
                 foreach (var c in common)
                 {
                     totalPriority += GetCharIntValue(c);
