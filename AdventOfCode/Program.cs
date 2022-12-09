@@ -7,7 +7,7 @@ namespace AdventOfCode
     {
         static void Main(string[] args)
         {
-            GetPuzzleInstanceForDay(8).Solve();
+            GetPuzzleInstanceForDay(9).Solve();
         }
 
         private static IPuzzle GetPuzzleInstanceForDay(int day)

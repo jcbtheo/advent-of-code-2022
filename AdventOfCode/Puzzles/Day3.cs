@@ -63,11 +63,11 @@ namespace AdventOfCode.Puzzles
         {
             if (char.IsUpper(c))
             {
-                return (int)c - 38; // offset of ascii int value to start at 27 for A
+                return c - 38; // offset of ascii int value to start at 27 for A
             }
             else
             {
-                return (int)c - 96; // offset of ascii int value to start at 1 for a
+                return c - 96; // offset of ascii int value to start at 1 for a
             }
         }
     }
