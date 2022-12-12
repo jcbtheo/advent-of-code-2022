@@ -7,11 +7,11 @@ namespace AdventOfCode.Puzzles
     public class Node
     {
         public (int, int) Coordinates { get; set; }
-        public int Value { get; set; }
+        public char Value { get; set; }
         public Node Parent { get; set; }
         public bool Explored { get; set; }
 
-        public Node((int, int) coordinates, int value)
+        public Node((int, int) coordinates, char value)
         {
             Coordinates = coordinates;
             Value = value;
@@ -20,11 +20,11 @@ namespace AdventOfCode.Puzzles
 
     public class HeightMap
     {
-        public Node StartNode { get; set; }
+        public Node DefaultStartNode { get; set; }
         public Node End { get; set; }
         public Node[,] Map { get; set; }
 
-        public List<Node> GetOtherStartNodes()
+        public List<Node> GetOtherStartNodes(char? startValue)
         {
             var coordinates = new List<Node>();
 
@@ -33,7 +33,7 @@ namespace AdventOfCode.Puzzles
                 for (int k = 0; k < Map.GetLength(1); k++)
                 {
                     var node = Map[i, k];
-                    if (node.Value == 1)
+                    if (node.Value == startValue)
                     {
                         coordinates.Add(node);
                     }
@@ -56,27 +56,25 @@ namespace AdventOfCode.Puzzles
         {
             var lines = File.ReadAllLines("inputs/day12.txt");
             var heightMap = CreateMap(lines);
-            var node = ApplyBfs(heightMap, heightMap.StartNode);
-            var length = 0;
-            while (node.Parent != null)
-            {
-                length++;
-                node = node.Parent;
-            }
-
-            Console.WriteLine(length);
+            var node = ApplyBfs(heightMap, heightMap.DefaultStartNode);
+            GetPathLength(node);
         }
 
         private void SolveSecond()
         {
             var lines = File.ReadAllLines("inputs/day12.txt");
             var heightMap = CreateMap(lines);
-            var node = ApplyBfs(heightMap, heightMap.StartNode, true);
+            var node = ApplyBfs(heightMap, heightMap.DefaultStartNode, true);
+            GetPathLength(node);
+        }
+
+        private void GetPathLength(Node finalNode)
+        {
             var length = 0;
-            while (node.Parent != null)
+            while (finalNode.Parent != null)
             {
                 length++;
-                node = node.Parent;
+                finalNode = finalNode.Parent;
             }
 
             Console.WriteLine(length);
@@ -90,7 +88,7 @@ namespace AdventOfCode.Puzzles
 
             if (additionalStartNodes)
             {
-                foreach (var node in map.GetOtherStartNodes())
+                foreach (var node in map.GetOtherStartNodes('a'))
                 {
                     node.Explored = true;
                     queue.Enqueue(node);
@@ -146,7 +144,7 @@ namespace AdventOfCode.Puzzles
             return adjacent;
         }
 
-        private HeightMap CreateMap(string[] lines, char? startValue = null)
+        private HeightMap CreateMap(string[] lines)
         {
             var heightMap = new HeightMap
             {
@@ -159,16 +157,15 @@ namespace AdventOfCode.Puzzles
                 for (int c = 0; c < line.Length; c++)
                 {
                     var value = line[c];
-                    var node = new Node((i, c), value - 'a' - 1); // why did + 1 fix this???
+                    var node = new Node((i, c), value);
 
                     if (value == 'S')
                     {
-                        node.Value = 26;
-                        heightMap.StartNode = node;
+                        node.Value = '~'; // make sure start is higher than anything else
+                        heightMap.DefaultStartNode = node;
                     }
                     else if (value == 'E')
                     {
-                        node.Value = 26;
                         heightMap.End = node;
                     }
                     heightMap.Map[i, c] = node;
